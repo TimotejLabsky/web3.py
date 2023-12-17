@@ -1,0 +1,37 @@
+name: Build and Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Create and activate virtual environment
+        run: |
+          python -m venv env
+          source env/bin/activate
+
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install build
+
+      - name: Build project
+        run: make dist
+
+      - name: Publish .tar.gz file
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist/*.tar.gz
